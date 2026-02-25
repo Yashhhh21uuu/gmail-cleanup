@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head><title>MailTrim Smart Cleanup</title></head>
+<body>
+<h2>Smart Cleanup</h2>
+<form id="cleanupForm">
+  <input id="email" placeholder="Email" required><br>
+  <input id="password" placeholder="Password" type="password" required><br>
+  <input id="domains" placeholder="Domains: newsletter.com, spam.com"><br>
+  <input id="keywords" placeholder="Keywords: offer, sale, win"><br>
+  <input type="number" id="older" value="30"> days old<br>
+  <select id="action">
+    <option value="quarantine">Quarantine</option>
+    <option value="trash">Trash</option>
+    <option value="spam">Spam</option>
+    <option value="Archive">Archive</option>
+  </select>
+  <label><input type="checkbox" id="dry_run" checked> Dry run</label>
+  <button type="submit">Run Cleanup</button>
+</form>
+
+<pre id="result"></pre>
+
+<script>
+document.getElementById("cleanupForm").addEventListener("submit", async (e)=>{
+  e.preventDefault();
+  const payload = {
+    email: document.getElementById("email").value,
+    password: document.getElementById("password").value,
+    domains: document.getElementById("domains").value,
+    keywords: document.getElementById("keywords").value,
+    older_than_days: document.getElementById("older").value,
+    action: document.getElementById("action").value,
+    dry_run: document.getElementById("dry_run").checked
+  };
+  document.getElementById("result").innerText = "Working...";
+  const res = await fetch("/api/cleanup", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify(payload)
+  });
+  const data = await res.json();
+  document.getElementById("result").innerText = JSON.stringify(data,null,2);
+});
+</script>
+</body>
+</html>
